@@ -379,8 +379,25 @@ const createGamebord = () => {
   for (let row = 0; row < tileMap01.height; row++) {
     for (let col = 0; col < tileMap01.width; col++) {
       const newElement = document.createElement("div");
-      console.log("GRID: " + tileMap01.mapGrid[row][col][0]);
-      newElement.classList.add("tile-space");
+      const tileType = tileMap01.mapGrid[row][col][0];
+
+      switch (tileType) {
+        case "W":
+          newElement.classList.add("tile-wall");
+          break;
+        case "G":
+          newElement.classList.add("tile-goal");
+          break;
+        case "B":
+          newElement.classList.add("entity-block");
+          break;
+        case "P":
+          newElement.classList.add("entity-player");
+          break;
+        default:
+          newElement.classList.add("tile-space");
+          break;
+      }
       gameboard.appendChild(newElement);
     }
   }
