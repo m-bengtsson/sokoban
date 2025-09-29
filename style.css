@@ -1,0 +1,31 @@
+.gameboard {
+  background-color: rgb(49, 49, 67);
+  height: fit-content;
+  width: fit-content;
+  display: grid;
+  grid-template-columns: repeat(19, 1fr);
+  grid-template-rows: repeat(16, 1fr);
+  gap: 1px;
+}
+
+.tile-space {
+  background-color: rgb(162, 162, 162);
+  min-height: 35px;
+  min-width: 35px;
+}
+.tile-wall {
+  background-color: darkslategray;
+}
+
+.tile-goal {
+  background-color: rgb(210, 144, 238);
+}
+.entity-player {
+  background-color: limegreen;
+}
+.entity-block {
+  background-color: orange;
+}
+.entity-block-goal {
+  background-color: red;
+}
