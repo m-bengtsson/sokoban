@@ -1,377 +1,4 @@
-/*   This is the base file for the Sokoban assignment - include this one in your HTML page, before you add the main script file*/
-
-/*   Enum of CSS Classes for the static elements   */
-var Tiles = {
-  Wall: "tile-wall",
-  Space: "tile-space",
-  Goal: "tile-goal",
-};
-
-/*   Enum of CSS Classes for the moving elements   */
-var Entities = {
-  Character: "entity-player",
-  Block: "entity-block",
-  BlockDone: "entity-block-goal",
-};
-
-// const tileSpace = document.createElement("div");
-// gameboard.appendChild(tileSpace);
-
-/*  Legend
-    W = Wall
-    B = Movable block
-    P = Player starting position
-    G = Goal area for the blocks
-*/
-
-//TODO
-// map array and append to DOM
-// CSS classes for tiles and entities
-// keydown event to move player and blocks
-
-var tileMap01 = {
-  width: 19,
-  height: 16,
-  mapGrid: [
-    [
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-    ],
-    [
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-    ],
-    [
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-    ],
-    [
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      ["W"],
-      ["W"],
-      ["W"],
-      ["W"],
-      ["W"],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-    ],
-    [
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      ["W"],
-      [" "],
-      [" "],
-      [" "],
-      ["W"],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-    ],
-    [
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      ["W"],
-      ["B"],
-      [" "],
-      [" "],
-      ["W"],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-    ],
-    [
-      [" "],
-      [" "],
-      ["W"],
-      ["W"],
-      ["W"],
-      [" "],
-      [" "],
-      ["B"],
-      ["W"],
-      ["W"],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-    ],
-    [
-      [" "],
-      [" "],
-      ["W"],
-      [" "],
-      [" "],
-      ["B"],
-      [" "],
-      ["B"],
-      [" "],
-      ["W"],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-    ],
-    [
-      ["W"],
-      ["W"],
-      ["W"],
-      [" "],
-      ["W"],
-      [" "],
-      ["W"],
-      ["W"],
-      [" "],
-      ["W"],
-      [" "],
-      [" "],
-      [" "],
-      ["W"],
-      ["W"],
-      ["W"],
-      ["W"],
-      ["W"],
-      ["W"],
-    ],
-    [
-      ["W"],
-      [" "],
-      [" "],
-      [" "],
-      ["W"],
-      [" "],
-      ["W"],
-      ["W"],
-      [" "],
-      ["W"],
-      ["W"],
-      ["W"],
-      ["W"],
-      ["W"],
-      [" "],
-      [" "],
-      ["G"],
-      ["G"],
-      ["W"],
-    ],
-    [
-      ["W"],
-      [" "],
-      ["B"],
-      [" "],
-      [" "],
-      ["B"],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      ["G"],
-      ["G"],
-      ["W"],
-    ],
-    [
-      ["W"],
-      ["W"],
-      ["W"],
-      ["W"],
-      ["W"],
-      [" "],
-      ["W"],
-      ["W"],
-      ["W"],
-      [" "],
-      ["W"],
-      ["P"],
-      ["W"],
-      ["W"],
-      [" "],
-      [" "],
-      ["G"],
-      ["G"],
-      ["W"],
-    ],
-    [
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      ["W"],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      ["W"],
-      ["W"],
-      ["W"],
-      ["W"],
-      ["W"],
-      ["W"],
-      ["W"],
-      ["W"],
-      ["W"],
-    ],
-    [
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      ["W"],
-      ["W"],
-      ["W"],
-      ["W"],
-      ["W"],
-      ["W"],
-      ["W"],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-    ],
-    [
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-    ],
-    [
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-      [" "],
-    ],
-  ],
-};
-
+let playerPosition = { row: 0, col: 0 };
 const createGamebord = () => {
   const gameboard = document.querySelector(".gameboard");
   gameboard.innerHTML = "";
@@ -392,6 +19,7 @@ const createGamebord = () => {
           newElement.classList.add("entity-block");
           break;
         case "P":
+          playerPosition = { row, col };
           newElement.classList.add("entity-player");
           break;
         default:
@@ -403,3 +31,45 @@ const createGamebord = () => {
   }
 };
 createGamebord();
+
+const getTileIndex = (row, col) => {
+  return row * tileMap01.width + col;
+};
+
+const movePlayer = (event) => {
+  const gameboard = document.querySelector(".gameboard");
+
+  let index = getTileIndex(playerPosition.row, playerPosition.col);
+
+  let newRow = playerPosition.row;
+  let newCol = playerPosition.col;
+
+  switch (event.key) {
+    case "ArrowUp":
+      newRow -= 1;
+      break;
+    case "ArrowDown":
+      newRow += 1;
+      break;
+    case "ArrowLeft":
+      newCol -= 1;
+      break;
+    case "ArrowRight":
+      newCol += 1;
+
+    default:
+      break;
+  }
+  let newIndex = getTileIndex(newRow, newCol);
+
+  gameboard.children[index].classList.remove("entity-player");
+  gameboard.children[index].classList.add("tile-space");
+
+  gameboard.children[newIndex].classList.remove("tile-space");
+  gameboard.children[newIndex].classList.add("entity-player");
+
+  playerPosition = { row: newRow, col: newCol };
+  console.log(newRow, newCol);
+};
+
+document.addEventListener("keydown", movePlayer);

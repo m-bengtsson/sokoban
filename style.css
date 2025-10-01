@@ -1,5 +1,5 @@
 .gameboard {
-  background-color: rgb(49, 49, 67);
+  background-color: rgb(52, 40, 67);
   height: fit-content;
   width: fit-content;
   display: grid;
@@ -9,23 +9,23 @@
 }
 
 .tile-space {
-  background-color: rgb(162, 162, 162);
+  background-color: rgb(52, 40, 67);
   min-height: 35px;
   min-width: 35px;
 }
 .tile-wall {
-  background-color: darkslategray;
+  background-color: rgb(167, 54, 116);
 }
 
 .tile-goal {
-  background-color: rgb(210, 144, 238);
+  background-color: rgb(207, 191, 215);
 }
 .entity-player {
-  background-color: limegreen;
+  background-color: rgb(124, 186, 25);
 }
 .entity-block {
-  background-color: orange;
+  background-color: rgb(196, 108, 255);
 }
 .entity-block-goal {
-  background-color: red;
+  background-color: rgb(157, 219, 255);
 }
