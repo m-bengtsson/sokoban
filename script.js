@@ -1,6 +1,7 @@
 let playerPosition = { row: 0, col: 0 };
+const gameboard = document.querySelector(".gameboard");
+
 const createGamebord = () => {
-  const gameboard = document.querySelector(".gameboard");
   gameboard.innerHTML = "";
 
   for (let row = 0; row < tileMap01.height; row++) {
@@ -30,15 +31,12 @@ const createGamebord = () => {
     }
   }
 };
-createGamebord();
 
 const getTileIndex = (row, col) => {
   return row * tileMap01.width + col;
 };
 
 const movePlayer = (event) => {
-  const gameboard = document.querySelector(".gameboard");
-
   let index = getTileIndex(playerPosition.row, playerPosition.col);
 
   let newRow = playerPosition.row;
@@ -56,20 +54,29 @@ const movePlayer = (event) => {
       break;
     case "ArrowRight":
       newCol += 1;
-
     default:
       break;
   }
   let newIndex = getTileIndex(newRow, newCol);
 
-  gameboard.children[index].classList.remove("entity-player");
-  gameboard.children[index].classList.add("tile-space");
+  // prevent moving out of bounds
+  if (tileMap01.mapGrid[newRow][newCol][0] !== "W") {
+    updateTile(index, "entity-player", "tile-space");
+    updateTile(newIndex, "tile-space", "entity-player");
 
-  gameboard.children[newIndex].classList.remove("tile-space");
-  gameboard.children[newIndex].classList.add("entity-player");
+    playerPosition = { row: newRow, col: newCol };
+  } else {
+    console.log("You hit a wall");
+  }
+  // if tile is block move block to next tile if space or goal
 
-  playerPosition = { row: newRow, col: newCol };
   console.log(newRow, newCol);
 };
+
+const updateTile = (index, removeClass, addClass) => {
+  gameboard.children[index].classList.remove(removeClass);
+  gameboard.children[index].classList.add(addClass);
+};
+createGamebord();
 
 document.addEventListener("keydown", movePlayer);
