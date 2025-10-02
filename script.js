@@ -32,45 +32,106 @@ const createGamebord = () => {
   }
 };
 
-const getTileIndex = (row, col) => {
-  return row * tileMap01.width + col;
+const tryMovePlayer = (rowStep, colStep) => {
+  // Destructuring
+  const { row, col } = playerPosition;
+
+  // New position,
+  const newRow = row + rowStep;
+  const newCol = col + colStep;
+
+  let currentIndex = getTileIndex(row, col);
+  let targetIndex = getTileIndex(newRow, newCol);
+
+  if (!canMoveTo(newRow, newCol)) {
+    return false;
+  }
+  // Block position
+  let afterBlockRow = newRow + rowStep;
+  let afterBlockCol = newCol + colStep;
+
+  // console.log("Target: " + targetIndex);
+
+  if (tileMap01.mapGrid[newRow][newCol][0] === "B") {
+    let afterBlockIndex = getTileIndex(afterBlockRow, afterBlockCol);
+    if (
+      !canMoveTo(afterBlockRow, afterBlockCol) ||
+      tileMap01.mapGrid[afterBlockRow][afterBlockCol][0] === "B"
+    ) {
+      console.log("Cant move block");
+      return false;
+    } else {
+      // Update tilemap, player and blockpostition
+      updateTile(currentIndex, "entity-player", "tile-space");
+      tileMap01.mapGrid[row][col][0] = " ";
+
+      updateTile(targetIndex, "entity-block", "entity-player");
+      tileMap01.mapGrid[newRow][newCol][0] = "P";
+
+      updateTile(afterBlockIndex, "tile-space", "entity-block");
+      tileMap01.mapGrid[afterBlockRow][afterBlockCol][0] = "B";
+
+      playerPosition = { row: newRow, col: newCol };
+      console.log("After BLOCK index: " + afterBlockIndex);
+    }
+  } else if (tileMap01.mapGrid[newRow][newCol][0] === " ") {
+    updateTile(currentIndex, "entity-player", "tile-space");
+    tileMap01.mapGrid[playerPosition.row][playerPosition.col][0] = " ";
+
+    updateTile(targetIndex, "tile-space", "entity-player");
+    tileMap01.mapGrid[newRow][newCol][0] = "P";
+
+    playerPosition = { row: newRow, col: newCol };
+
+    console.log("player: " + targetIndex);
+  }
+
+  // console.log("Playerindex AFTER: " + targetIndex);
+  // console.log("Playerindex BEFORE: " + currentIndex);
+
+  // prevent moving out of bounds
+  //   if (canMoveTo(newRow, newCol)) {
+  //     updateTile(currentIndex, "entity-player", "tile-space");
+  //     updateTile(targetIndex, "tile-space", "entity-player");
+  //     playerPosition = { row: newRow, col: newCol };
+  //   } else {
+  //     console.log("You hit a wall");
+  //   }
+  // if tile is block move block to next tile if space or goal
 };
 
 const movePlayer = (event) => {
-  let index = getTileIndex(playerPosition.row, playerPosition.col);
-
-  let newRow = playerPosition.row;
-  let newCol = playerPosition.col;
+  let rowStep = 0;
+  let colStep = 0;
 
   switch (event.key) {
     case "ArrowUp":
-      newRow -= 1;
+      rowStep = -1;
       break;
     case "ArrowDown":
-      newRow += 1;
+      rowStep = 1;
       break;
     case "ArrowLeft":
-      newCol -= 1;
+      colStep = -1;
       break;
     case "ArrowRight":
-      newCol += 1;
+      colStep = 1;
     default:
       break;
   }
-  let newIndex = getTileIndex(newRow, newCol);
 
-  // prevent moving out of bounds
-  if (tileMap01.mapGrid[newRow][newCol][0] !== "W") {
-    updateTile(index, "entity-player", "tile-space");
-    updateTile(newIndex, "tile-space", "entity-player");
+  tryMovePlayer(rowStep, colStep);
+  console.log(tileMap01.mapGrid);
+  console.log("player positions: " + playerPosition.row);
+};
 
-    playerPosition = { row: newRow, col: newCol };
-  } else {
-    console.log("You hit a wall");
-  }
-  // if tile is block move block to next tile if space or goal
+// Returns true if position of tile is not a wall
+const canMoveTo = (row, col) => {
+  return tileMap01.mapGrid[row][col][0] !== "W";
+};
 
-  console.log(newRow, newCol);
+const getTileIndex = (row, col) => {
+  return row * tileMap01.width + col;
 };
 
 const updateTile = (index, removeClass, addClass) => {
