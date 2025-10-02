@@ -10,7 +10,7 @@ const createGamebord = () => {
   for (let row = 0; row < tileMap01.height; row++) {
     for (let col = 0; col < tileMap01.width; col++) {
       const newElement = document.createElement("div");
-      const tileType = tileMap01.mapGrid[row][col][0];
+      const tileType = getTileType(row, col);
 
       switch (tileType) {
         case "W":
@@ -43,9 +43,6 @@ const tryMovePlayer = (rowStep, colStep) => {
   const newRow = row + rowStep;
   const newCol = col + colStep;
 
-  let currentIndex = getTileIndex(row, col);
-  let targetIndex = getTileIndex(newRow, newCol);
-
   if (!canMoveTo(newRow, newCol)) {
     return false;
   }
@@ -53,40 +50,26 @@ const tryMovePlayer = (rowStep, colStep) => {
   let afterBlockRow = newRow + rowStep;
   let afterBlockCol = newCol + colStep;
 
-  // console.log("Target: " + targetIndex);
-
-  if (tileMap01.mapGrid[newRow][newCol][0] === "B") {
-    let afterBlockIndex = getTileIndex(afterBlockRow, afterBlockCol);
+  if (getTileType(newRow, newCol) === "B") {
     if (
       !canMoveTo(afterBlockRow, afterBlockCol) ||
-      tileMap01.mapGrid[afterBlockRow][afterBlockCol][0] === "B"
+      getTileType(afterBlockRow, afterBlockCol) === "B"
     ) {
       console.log("Cant move block");
       return false;
     } else {
-      // Update tilemap, player and blockpostition
-      updateTile(currentIndex, Character, Space);
-      tileMap01.mapGrid[row][col][0] = " ";
-
-      updateTile(targetIndex, Block, Character);
-      tileMap01.mapGrid[newRow][newCol][0] = "P";
-
-      updateTile(afterBlockIndex, Space, Block);
-      tileMap01.mapGrid[afterBlockRow][afterBlockCol][0] = "B";
+      // Update tile, player and blockpostition
+      updateTile(row, col, Character, Space, " ");
+      updateTile(newRow, newCol, Block, Character, "P");
+      updateTile(afterBlockRow, afterBlockCol, Space, Block, "B");
 
       playerPosition = { row: newRow, col: newCol };
-      console.log("After BLOCK index: " + afterBlockIndex);
-    } // else if afterblock index is G and classname is entity-block
-  } else if (tileMap01.mapGrid[newRow][newCol][0] === " ") {
-    updateTile(currentIndex, Character, Space);
-    tileMap01.mapGrid[playerPosition.row][playerPosition.col][0] = " ";
-
-    updateTile(targetIndex, Space, Character);
-    tileMap01.mapGrid[newRow][newCol][0] = "P";
+    }
+  } else if (getTileType(newRow, newCol) === " ") {
+    updateTile(row, col, Character, Space, " ");
+    updateTile(newRow, newCol, Space, Character, "P");
 
     playerPosition = { row: newRow, col: newCol };
-
-    console.log("player: " + targetIndex);
   }
 };
 const movePlayer = (event) => {
@@ -119,11 +102,20 @@ const canMoveTo = (row, col) => {
 const getTileIndex = (row, col) => {
   return row * tileMap01.width + col;
 };
+const getTileType = (row, col) => {
+  return tileMap01.mapGrid[row][col][0];
+};
+const setTileType = (row, col, tileType) => {
+  tileMap01.mapGrid[row][col][0] = tileType;
+};
 
-const updateTile = (index, removeClass, addClass) => {
+const updateTile = (row, col, removeClass, addClass, tileType) => {
+  let index = getTileIndex(row, col);
   gameboard.children[index].classList.remove(removeClass);
   gameboard.children[index].classList.add(addClass);
+  setTileType(row, col, tileType);
 };
+
 createGamebord();
 
 document.addEventListener("keydown", movePlayer);
