@@ -20,6 +20,7 @@ var TileTypes = {
   Goal: "G",
   Player: "P",
   Block: "B",
+  BlockOnGoal: "BG",
 };
 
 var TileClass = {
@@ -28,6 +29,7 @@ var TileClass = {
   [TileTypes.Goal]: Tiles.Goal,
   [TileTypes.Player]: Entities.Character,
   [TileTypes.Block]: Entities.Block,
+  [TileTypes.BlockOnGoal]: Entities.BlockDone,
 };
 
 /*  Legend
