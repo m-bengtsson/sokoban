@@ -27,8 +27,16 @@ const tryPlayerMove = (rowStep, colStep) => {
     col: targetPosition.col + colStep,
   };
 
-  // Exit function if target is a wall
   if (isWall(targetPosition)) return false;
+
+  // If block is on goal and a wall is after, player cant push block
+  if (isBlockDone(targetPosition) && isWall(afterTargetPosition)) {
+    return false;
+    // If block is on goal and a empty goal tile is after, player can push block
+  } else if (isBlockDone(targetPosition) && !isBlockDone(afterTargetPosition)) {
+    // update tiles
+    console.log("Block in goal, next to wall");
+  }
 
   if (isBlock(targetPosition)) {
     if (isWall(afterTargetPosition) || isBlock(afterTargetPosition)) {
@@ -51,22 +59,27 @@ const movePlayer = (fromPos, toPos) => {
 };
 
 const moveBlock = (fromPos, toPos) => {
-  updateTile(fromPos, TileTypes.Space);
-  updateTile(toPos, TileTypes.Block);
+  if (isGoal(toPos)) {
+    updateTile(fromPos, TileTypes.Space);
+    updateTile(toPos, TileTypes.BlockOnGoal);
+  } else {
+    updateTile(fromPos, TileTypes.Space);
+    updateTile(toPos, TileTypes.Block);
+  }
 };
 
-const moveBlockInGoal = (fromPos, toPos) => {
-  console.log("Block in goal area");
+// const moveBlockInGoal = (fromPos, toPos) => {
+//   console.log("Block in goal area");
 
-  updateTile(fromPos, tileUnderBlock);
-  tileUnderBlock = getTileType(toPos);
-  const index = getTileIndex(toPos);
+//   updateTile(fromPos, tileUnderBlock);
+//   tileUnderBlock = getTileType(toPos);
+//   const index = getTileIndex(toPos);
 
-  gameboard.children[index].classList.add(Entities.BlockDone);
-  setTileType(toPos, TileTypes.Goal);
+//   gameboard.children[index].classList.add(Entities.BlockDone);
+//   setTileType(toPos, TileTypes.Goal);
 
-  playerPosition = toPos;
-};
+//   playerPosition = toPos;
+// };
 
 const updateTile = (pos, newTileType) => {
   const index = getTileIndex(pos);
@@ -76,6 +89,10 @@ const updateTile = (pos, newTileType) => {
   gameboard.children[index].classList.add(TileClass[newTileType]);
 
   setTileType(pos, newTileType);
+};
+
+const isBlockDone = (pos) => {
+  return getTileType(pos) === TileTypes.BlockOnGoal;
 };
 
 const isGoal = (pos) => {
