@@ -1,8 +1,6 @@
 let playerPosition = { row: 0, col: 0 };
+let tileUnderPlayer = TileTypes.Space;
 const gameboard = document.querySelector(".gameboard");
-
-let { Wall, Space, Goal } = Tiles;
-let { Character, Block, BlockDone } = Entities;
 
 const createGamebord = () => {
   gameboard.innerHTML = "";
@@ -10,69 +8,82 @@ const createGamebord = () => {
   for (let row = 0; row < tileMap01.height; row++) {
     for (let col = 0; col < tileMap01.width; col++) {
       const newElement = document.createElement("div");
-      const tileType = getTileType(row, col);
+      const tileType = getTileType({ row, col });
 
-      switch (tileType) {
-        case "W":
-          newElement.classList.add(Wall);
-          break;
-        case "G":
-          newElement.classList.add(Goal);
-          break;
-        case "B":
-          newElement.classList.add(Block);
-          break;
-        case "P":
-          playerPosition = { row, col };
-          newElement.classList.add(Character);
-          break;
-        default:
-          newElement.classList.add(Space);
-          break;
+      if (tileType === TileTypes.Player) {
+        playerPosition = { row, col };
+        // Check if original tile under player was a goal
+        tileUnderPlayer =
+          tileMap01.mapGrid[row][col][0] === TileTypes.Goal
+            ? TileTypes.Goal
+            : TileTypes.Space;
       }
+      newElement.classList.add(TileClass[tileType]);
       gameboard.appendChild(newElement);
     }
   }
 };
 
-const tryMovePlayer = (rowStep, colStep) => {
-  // Destructuring
+const tryPlayerMove = (rowStep, colStep) => {
   const { row, col } = playerPosition;
+  const targetPosition = { row: row + rowStep, col: col + colStep };
+  const afterTargetPosition = {
+    row: targetPosition.row + rowStep,
+    col: targetPosition.col + colStep,
+  };
 
-  // New position,
-  const newRow = row + rowStep;
-  const newCol = col + colStep;
+  console.log("tile under player: ", tileUnderPlayer);
+  console.log(getTileType(playerPosition));
+  // Exit function if tile next to player is a wall
+  if (isWall(targetPosition)) return false;
 
-  if (!canMoveTo(newRow, newCol)) {
-    return false;
-  }
-  // Block positionsef
-  let afterBlockRow = newRow + rowStep;
-  let afterBlockCol = newCol + colStep;
-
-  if (getTileType(newRow, newCol) === "B") {
-    if (
-      !canMoveTo(afterBlockRow, afterBlockCol) ||
-      getTileType(afterBlockRow, afterBlockCol) === "B"
-    ) {
-      console.log("Cant move block");
+  if (isBlock(targetPosition)) {
+    //console.log("Block");
+    if (isWall(afterTargetPosition) || isBlock(afterTargetPosition)) {
       return false;
+      // } else if (isGoal(afterTargetPosition)) {
+      //   console.log("GOAL");
+      //   movePlayer(playerPosition, targetPosition);
     } else {
-      // Update tile, player and blockpostition
-      updateTile(row, col, Character, Space, " ");
-      updateTile(newRow, newCol, Block, Character, "P");
-      updateTile(afterBlockRow, afterBlockCol, Space, Block, "B");
-
-      playerPosition = { row: newRow, col: newCol };
+      moveBlock(targetPosition, afterTargetPosition);
+      movePlayer(playerPosition, targetPosition);
     }
-  } else if (getTileType(newRow, newCol) === " ") {
-    updateTile(row, col, Character, Space, " ");
-    updateTile(newRow, newCol, Space, Character, "P");
-
-    playerPosition = { row: newRow, col: newCol };
+  } else {
+    //console.log("Move player");
+    movePlayer(playerPosition, targetPosition);
   }
 };
-const movePlayer = (event) => {
+
+const moveBlockInGoal = (fromPos, toPos) => {
+  let index = getTileIndex(fromPos);
+
+  gameboard.children[index].classList.remove(TileClass[oldTileType]);
+  gameboard.children[index].classList.add(TileClass[newTileType]);
+};
+
+const movePlayer = (fromPos, toPos) => {
+  updateTile(fromPos, tileUnderPlayer);
+  tileUnderPlayer = getTileType(toPos);
+
+  updateTile(toPos, TileTypes.Player);
+  playerPosition = toPos;
+};
+
+const moveBlock = (fromPos, toPos) => {
+  updateTile(fromPos, TileTypes.Space);
+  updateTile(toPos, TileTypes.Block);
+};
+
+const updateTile = (pos, newTileType) => {
+  let index = getTileIndex(pos);
+  let oldTileType = getTileType(pos);
+
+  gameboard.children[index].classList.remove(TileClass[oldTileType]);
+  gameboard.children[index].classList.add(TileClass[newTileType]);
+  setTileType(pos, newTileType);
+};
+
+const handlePlayerInput = (event) => {
   let rowStep = 0;
   let colStep = 0;
 
@@ -91,31 +102,27 @@ const movePlayer = (event) => {
     default:
       break;
   }
-  tryMovePlayer(rowStep, colStep);
+  tryPlayerMove(rowStep, colStep);
 };
-
-// Returns true if position of tile is not a wall
-const canMoveTo = (row, col) => {
-  return tileMap01.mapGrid[row][col][0] !== "W";
+const isGoal = (pos) => {
+  return getTileType(pos) === TileTypes.Goal;
 };
-
-const getTileIndex = (row, col) => {
-  return row * tileMap01.width + col;
+const isBlock = (pos) => {
+  return getTileType(pos) === TileTypes.Block;
 };
-const getTileType = (row, col) => {
-  return tileMap01.mapGrid[row][col][0];
+const isWall = (pos) => {
+  return tileMap01.mapGrid[pos.row][pos.col][0] === "W";
 };
-const setTileType = (row, col, tileType) => {
-  tileMap01.mapGrid[row][col][0] = tileType;
+const getTileType = (pos) => {
+  return tileMap01.mapGrid[pos.row][pos.col][0];
 };
-
-const updateTile = (row, col, removeClass, addClass, tileType) => {
-  let index = getTileIndex(row, col);
-  gameboard.children[index].classList.remove(removeClass);
-  gameboard.children[index].classList.add(addClass);
-  setTileType(row, col, tileType);
+const setTileType = (pos, tileType) => {
+  tileMap01.mapGrid[pos.row][pos.col][0] = tileType;
+};
+const getTileIndex = (pos) => {
+  return pos.row * tileMap01.width + pos.col;
 };
 
 createGamebord();
 
-document.addEventListener("keydown", movePlayer);
+document.addEventListener("keydown", handlePlayerInput);

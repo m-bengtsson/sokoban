@@ -14,6 +14,22 @@ var Entities = {
   BlockDone: "entity-block-goal", // Block on goal
 };
 
+var TileTypes = {
+  Wall: "W",
+  Space: " ",
+  Goal: "G",
+  Player: "P",
+  Block: "B",
+};
+
+var TileClass = {
+  [TileTypes.Wall]: Tiles.Wall,
+  [TileTypes.Space]: Tiles.Space,
+  [TileTypes.Goal]: Tiles.Goal,
+  [TileTypes.Player]: Entities.Character,
+  [TileTypes.Block]: Entities.Block,
+};
+
 /*  Legend
     W = Wall
     B = Movable block
